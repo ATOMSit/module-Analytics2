@@ -2,6 +2,7 @@
 
 namespace Modules\Analytics\Providers;
 
+use App\Website;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -24,6 +25,8 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+
+        Route::model('website', Website::class);
     }
 
     /**
@@ -33,9 +36,27 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
-        $this->mapApiRoutes();
+        $this->mapAdminRoutes();
 
         $this->mapWebRoutes();
+
+        $this->mapApiRoutes();
+    }
+
+    /**
+     * Define the "customer" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapAdminRoutes()
+    {
+        Route::domain('admin.atomsit.com')
+            ->middleware(['admin'])
+            ->as('admin.')
+            ->namespace($this->moduleNamespace)
+            ->group(__DIR__ . '/../Routes/admin.php');
     }
 
     /**
